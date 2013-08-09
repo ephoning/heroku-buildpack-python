@@ -30,27 +30,27 @@ echo "-----------------------------------"
 
 
 
-# Static configurations for virtualenv caches.
+echo # Static configurations for virtualenv caches.
 VIRTUALENV_LOC=".heroku/venv"
 LEGACY_TRIGGER="lib/python2.7"
 PROFILE_PATH="$BUILD_DIR/.profile.d/python.sh"
 
-# Python version. This will be used in the future to specify custom Pythons.
+echo # Python version. This will be used in the future to specify custom Pythons.
 DEFAULT_PYTHON_VERSION="python-2.7.4"
 PYTHON_EXE="/app/.heroku/python/bin/python"
 PIP_VERSION="1.3.1"
 DISTRIBUTE_VERSION="0.6.36"
 
-# Setup bpwatch
+echo # Setup bpwatch
 export PATH=$PATH:$ROOT_DIR/vendor/bpwatch
 LOGPLEX_KEY="t.b396af7f-ad75-4643-8b9e-ebb288acc624"
 export BPWATCH_STORE_PATH=$CACHE_DIR/bpwatch.json
 BUILDPACK_VERSION=v25
 
-# Support Anvil Build_IDs
+echo # Support Anvil Build_IDs
 [ ! "$REQUEST_ID" ] && REQUEST_ID=$SLUG_ID
 
-# Sanitizing environment variables.
+echo # Sanitizing environment variables.
 unset GIT_DIR PYTHONHOME PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH
 
 bpwatch init $LOGPLEX_KEY
@@ -60,13 +60,13 @@ TMP_APP_DIR=$CACHE_DIR/tmp_app_dir
 bpwatch start compile
 
 
-# We'll need to send these statics to other scripts we `source`.
+echo # We'll need to send these statics to other scripts we `source`.
 export BUILD_DIR CACHE_DIR BIN_DIR PROFILE_PATH
 
-# Syntax sugar.
+echo # Syntax sugar.
 source $BIN_DIR/utils
 
-# Directory Hacks for path consistiency.
+echo # Directory Hacks for path consistiency.
 APP_DIR='/app'
 TMP_APP_DIR=$CACHE_DIR/tmp_app_dir
 
@@ -80,52 +80,52 @@ bpwatch start anvil_appdir_stage
   fi
 bpwatch stop anvil_appdir_stage
 
-# Copy Application code in.
+echo # Copy Application code in.
 bpwatch start appdir_stage
   deep-mv $BUILD_DIR $APP_DIR
 bpwatch stop appdir_stage
 
-# Set new context.
+echo # Set new context.
 ORIG_BUILD_DIR=$BUILD_DIR
 BUILD_DIR=$APP_DIR
 
-# Prepend proper path buildpack use.
+echo # Prepend proper path buildpack use.
 export PATH=$BUILD_DIR/.heroku/python/bin:$PATH
 export PYTHONUNBUFFERED=1
 export LANG=en_US.UTF-8
 export LIBRARY_PATH=/app/.heroku/vendor/lib
 export LD_LIBRARY_PATH=/app/.heroku/vendor/lib
 
-# Switch to the repo's context.
+echo # Switch to the repo's context.
 cd $BUILD_DIR
 
-# Experimental pre_compile hook.
+echo # Experimental pre_compile hook.
 bpwatch start pre_compile
   source $BIN_DIR/steps/hooks/pre_compile
 bpwatch stop pre_compile
 
-# If no requirements given, assume `setup.py develop`.
+echo # If no requirements given, assume `setup.py develop`.
 if [ ! -f requirements.txt ]; then
   puts-step "No requirements.txt provided; assuming dist package."
   echo "-e ." > requirements.txt
 fi
 
-# If no runtime given, assume default version.
+echo # If no runtime given, assume default version.
 if [ ! -f runtime.txt ]; then
   puts-step "No runtime.txt provided; assuming $DEFAULT_PYTHON_VERSION."
   echo $DEFAULT_PYTHON_VERSION > runtime.txt
 fi
 
-# ### The Cache
+echo # ### The Cache
 mkdir -p $CACHE_DIR
 
-# Purge "old-style" virtualenvs.
+echo # Purge "old-style" virtualenvs.
 bpwatch start clear_old_venvs
   [ -d $CACHE_DIR/$LEGACY_TRIGGER ] && rm -fr $CACHE_DIR/.heroku/bin $CACHE_DIR/.heroku/lib $CACHE_DIR/.heroku/include
   [ -d $CACHE_DIR/$VIRTUALENV_LOC ] && rm -fr $CACHE_DIR/.heroku/venv $CACHE_DIR/.heroku/src
 bpwatch stop clear_old_venvs
 
-# Restore old artifacts from the cache.
+echo # Restore old artifacts from the cache.
 bpwatch start restore_cache
   for dir in $CACHED_DIRS; do
     cp -R $CACHE_DIR/$dir . &> /dev/null || true
@@ -133,7 +133,7 @@ bpwatch start restore_cache
 bpwatch stop restore_cache
 
 set +e
-# Create set-aside `.heroku` folder.
+echo # Create set-aside `.heroku` folder.
 mkdir .heroku &> /dev/null
 set -e
 
@@ -142,7 +142,7 @@ mkdir -p $(dirname $PROFILE_PATH)
 set +e
 PYTHON_VERSION=$(cat runtime.txt)
 
-# Install Python.
+echo# Install Python.
 if [ -f .heroku/python-version ]; then
   if [ ! $(cat .heroku/python-version) = $PYTHON_VERSION ]; then
     bpwatch start uninstall_python
@@ -167,7 +167,7 @@ if [ ! "$SKIP_INSTALL" ]; then
     mv python .heroku/python
   bpwatch stop install_python
 
-  # Record for future reference.
+echo  # Record for future reference.
   echo $PYTHON_VERSION > .heroku/python-version
   FRESH_PYTHON=true
 
@@ -176,7 +176,7 @@ else
   puts-step "Using Python runtime ($PYTHON_VERSION)"
 fi
 
-# If Pip isn't up to date:
+echo # If Pip isn't up to date:
 if [ "$FRESH_PYTHON" ] || [[ ! $(pip --version) == *$PIP_VERSION* ]]; then
   WORKING_DIR=$(pwd)
 
@@ -203,20 +203,20 @@ fi
 set -e
 hash -r
 
-# Pylibmc support.
+echo # Pylibmc support.
 # See [`bin/steps/pylibmc`](pylibmc.html).
 bpwatch start pylibmc_install
   source $BIN_DIR/steps/pylibmc
 bpwatch stop pylibmc_install
 
-# Install Mercurial if it appears to be required.
+echo # Install Mercurial if it appears to be required.
 if (grep -Fiq "hg+" requirements.txt) then
   bpwatch start mercurial_install
     /app/.heroku/python/bin/pip install --use-mirrors mercurial | cleanup | indent
   bpwatch stop mercurial_install
 fi
 
-# Install dependencies with Pip.
+echo # Install dependencies with Pip.
 puts-step "Installing dependencies using Pip ($PIP_VERSION)"
 
 
@@ -228,15 +228,15 @@ puts-step "Installing dependencies using Pip ($PIP_VERSION)"
 [ ! "$FRESH_PYTHON" ] && bpwatch stop pip_install
 [ "$FRESH_PYTHON" ] && bpwatch stop pip_install_first
 
-# Django collectstatic support.
+echo # Django collectstatic support.
 bpwatch start collectstatic
   source $BIN_DIR/steps/collectstatic
 bpwatch stop collectstatic
 
-# ### Finalize
+echo # ### Finalize
 #
 
-# Set context environment variables.
+echo # Set context environment variables.
 set-env PATH '$HOME/.heroku/python/bin:$PATH'
 set-env PYTHONUNBUFFERED true
 set-env PYTHONHOME /app/.heroku/python
@@ -247,12 +247,12 @@ set-default-env PYTHONHASHSEED random
 set-default-env PYTHONPATH /app/
 
 
-# Experimental post_compile hook.
+echo # Experimental post_compile hook.
 bpwatch start post_compile
   source $BIN_DIR/steps/hooks/post_compile
 bpwatch stop post_compile
 
-# Store new artifacts in cache.
+echo # Store new artifacts in cache.
 bpwatch start dump_cache
   for dir in $CACHED_DIRS; do
     rm -rf $CACHE_DIR/$dir
@@ -260,7 +260,7 @@ bpwatch start dump_cache
   done
 bpwatch stop dump_cache
 
-# ### Fin.
+echo # ### Fin.
 bpwatch start appdir_commit
   deep-mv $BUILD_DIR $ORIG_BUILD_DIR
 bpwatch stop appdir_commit
