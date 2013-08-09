@@ -50,6 +50,9 @@ BUILDPACK_VERSION=v25
 echo "# Support Anvil Build_IDs"
 [ ! "$REQUEST_ID" ] && REQUEST_ID=$SLUG_ID
 
+# force request id to something...
+[ ! "$REQUEST_ID" ] && REQUEST_ID=42
+
 echo "# Sanitizing environment variables."
 unset GIT_DIR PYTHONHOME PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH
 
