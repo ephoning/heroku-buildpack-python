@@ -25,7 +25,7 @@ echo "BUILD_DIR: " $BUILD_FIR
 echo "CACHE_DIR: " $CACHE_DIR
 echo
 echo "Python?: " `which python`
-echo "Python version: " `python --version`
+echo `python --version`
 echo "-----------------------------------"
 
 
