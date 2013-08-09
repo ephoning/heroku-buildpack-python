@@ -53,7 +53,9 @@ echo "# Support Anvil Build_IDs"
 echo "# Sanitizing environment variables."
 unset GIT_DIR PYTHONHOME PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH
 
+echo "about to: bpwatch init $LOGPLEX_KEY"
 bpwatch init $LOGPLEX_KEY
+echo "about to: bpwatch build python $BUILDPACK_VERSION $REQUEST_ID"
 bpwatch build python $BUILDPACK_VERSION $REQUEST_ID
 TMP_APP_DIR=$CACHE_DIR/tmp_app_dir
 
