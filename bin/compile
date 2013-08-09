@@ -19,6 +19,16 @@ CACHE_DIR=$2
 
 CACHED_DIRS=".heroku"
 
+
+echo "-----------------------------------"
+echo "BUILD_DIR: " $BUILD_FIR
+echo "CACHE_DIR: " $CACHE_DIR
+echo
+echo "Python?: " `which python`
+echo "-----------------------------------"
+
+
+
 # Static configurations for virtualenv caches.
 VIRTUALENV_LOC=".heroku/venv"
 LEGACY_TRIGGER="lib/python2.7"
