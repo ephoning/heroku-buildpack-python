@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+import os
+import sys
+
+expr = "os.environ" + sys.argv[1]
+print eval(expr)
