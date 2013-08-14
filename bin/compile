@@ -53,7 +53,7 @@ echo $TOTAL_ENV
 echo "=======================
 "
 echo "Support Anvil Build_IDs"
-[ ! "$REQUEST_ID" ] && REQUEST_ID=`$BIN_DIR/vcap_env [\"VCAP_APPLICATION\"][\"application_version\"]`
+[ ! "$REQUEST_ID" ] && REQUEST_ID=`$BIN_DIR/vcap_env get_application_version`
 
 echo "Sanitizing environment variables."
 unset GIT_DIR PYTHONHOME PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH
