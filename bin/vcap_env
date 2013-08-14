@@ -3,5 +3,7 @@
 import os
 import sys
 
-expr = "os.environ" + sys.argv[1]
+expr = "os.environ"
+if len(sys.argv) > 1:
+ expr += sys.argv[1]
 print eval(expr)
