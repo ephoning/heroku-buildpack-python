@@ -19,11 +19,11 @@ Example usage:
     ...
     -----> Fetching custom git buildpack... done
     -----> Python app detected
-    -----> No runtime.txt provided; assuming python-2.7.3.
-    -----> Preparing Python runtime (python-2.7.3)
-    -----> Installing Distribute (0.6.34)
-    -----> Installing Pip (1.2.1)
-    -----> Installing dependencies using Pip (1.2.1)
+    -----> No runtime.txt provided; assuming python-2.7.6.
+    -----> Preparing Python runtime (python-2.7.6)
+    -----> Installing Distribute (0.7.3)
+    -----> Installing Pip (1.5.4)
+    -----> Installing dependencies using Pip (1.5.4)
            Downloading/unpacking Flask==0.7.2 (from -r requirements.txt (line 1))
            Downloading/unpacking Werkzeug>=0.6.1 (from Flask==0.7.2->-r requirements.txt (line 1))
            Downloading/unpacking Jinja2>=2.4 (from Flask==0.7.2->-r requirements.txt (line 1))
@@ -45,10 +45,10 @@ Specify a Runtime
 You can also provide arbitrary releases Python with a `runtime.txt` file.
 
     $ cat runtime.txt
-    python-3.3.0
+    python-3.4.0
     
 Runtime options include:
 
-- python-2.7.4
-- python-3.3.1
-- pypy-1.9 (experimental)
+- python-2.7.6
+- python-3.4.0
+- pypy-2.2.1 (experimental)
